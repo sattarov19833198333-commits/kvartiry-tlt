@@ -48,14 +48,33 @@ function renderCards(list) {
 document.getElementById('searchBtn').addEventListener('click', () => {
     const type = document.getElementById('dealType').value;
     const district = document.getElementById('district').value.toLowerCase().trim();
+    const roomsValue = document.getElementById('rooms').value;
 
     let filtered = flats.filter(f => f.type === type);
 
+    // Фильтр по району
     if (district) {
         filtered = filtered.filter(f =>
             f.details.toLowerCase().includes(district) ||
             f.title.toLowerCase().includes(district)
         );
+    }
+
+    // Фильтр по комнатам
+    if (roomsValue !== 'any') {
+        if (roomsValue === 'studio') {
+            // Студия = "Студия" в названии
+            filtered = filtered.filter(f =>
+                f.title.toLowerCase().includes('студия')
+            );
+        } else {
+            // Ищем "1-комн.", "2-комн.", "3-комн." в названии
+            const rooms = Number(roomsValue);
+            filtered = filtered.filter(f => {
+                const match = f.title.match(/(\d+)-комн/);
+                return match && Number(match[1]) === rooms;
+            });
+        }
     }
 
     renderCards(filtered);
