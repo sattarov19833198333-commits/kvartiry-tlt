@@ -13,9 +13,8 @@ const PORT = process.env.PORT || 3000;
 // ===== MIDDLEWARE =====
 app.use(cors());
 app.use(express.json());
-// Раздаём фронтенд как статику
-app.use(express.static(__dirname));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(__dirname));
 
 // ===== АВТОРИЗАЦИЯ =====
 const activeTokens = new Set();
@@ -72,7 +71,7 @@ function saveJSON(file, data) {
 async function sendToDiscord(lead) {
     const webhook = process.env.DISCORD_WEBHOOK;
     if (!webhook) {
-        console.log('⚠️ Discord не настроен — пропускаю');
+        console.log('⚠️ Discord не настроен');
         return;
     }
 
@@ -90,7 +89,7 @@ async function sendToDiscord(lead) {
 
     try {
         await axios.post(webhook, { content });
-        console.log('✅ Уведомление отправлено в Discord');
+        console.log('✅ Уведомление в Discord отправлено');
     } catch (error) {
         console.error('❌ Ошибка Discord:', error.response?.data || error.message);
     }
@@ -108,7 +107,7 @@ app.post('/api/login', (req, res) => {
     const validPassword = process.env.ADMIN_PASSWORD;
 
     if (!validLogin || !validPassword) {
-        return res.status(500).json({ success: false, error: 'Логин/пароль не настроены на сервере' });
+        return res.status(500).json({ success: false, error: 'Логин/пароль не настроены' });
     }
 
     if (login === validLogin && password === validPassword) {
@@ -118,7 +117,7 @@ app.post('/api/login', (req, res) => {
         return res.json({ success: true, token });
     }
 
-    console.log('❌ Неудачная попытка входа, логин:', login);
+    console.log('❌ Неудачная попытка входа');
     return res.status(401).json({ success: false, error: 'Неверный логин или пароль' });
 });
 
@@ -136,7 +135,7 @@ app.post('/api/lead', async (req, res) => {
         email: email || '',
         dealType: dealType || '',
         message: message || '',
-        status: 'new', // new | in_progress | closed
+        status: 'new',
         createdAt: new Date().toISOString(),
         ip: req.ip
     };
@@ -157,40 +156,31 @@ app.get('/api/flats', (req, res) => {
 
 // ===== ЗАЩИЩЁННЫЕ МАРШРУТЫ =====
 
-// ---------- ЗАЯВКИ ----------
-
 app.get('/api/leads', requireAuth, (req, res) => {
-    // Сортируем: новые сверху
-    const leads = readJSON(LEADS_FILE).sort((a, b) => {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-    });
+    const leads = readJSON(LEADS_FILE).sort((a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt)
+    );
     res.json(leads);
 });
 
-// Обновить статус заявки
 app.put('/api/leads/:id', requireAuth, (req, res) => {
     const id = Number(req.params.id);
     const { status } = req.body;
-
     const allowed = ['new', 'in_progress', 'closed'];
+
     if (!allowed.includes(status)) {
         return res.status(400).json({ success: false, error: 'Недопустимый статус' });
     }
 
     const leads = readJSON(LEADS_FILE);
     const index = leads.findIndex(l => l.id === id);
-
-    if (index === -1) {
-        return res.status(404).json({ success: false, error: 'Заявка не найдена' });
-    }
+    if (index === -1) return res.status(404).json({ success: false, error: 'Заявка не найдена' });
 
     leads[index].status = status;
     saveJSON(LEADS_FILE, leads);
-    console.log('🔄 Статус заявки', id, '→', status);
     res.json({ success: true, lead: leads[index] });
 });
 
-// Удалить заявку
 app.delete('/api/leads/:id', requireAuth, (req, res) => {
     const id = Number(req.params.id);
     let leads = readJSON(LEADS_FILE);
@@ -202,16 +192,12 @@ app.delete('/api/leads/:id', requireAuth, (req, res) => {
     }
 
     saveJSON(LEADS_FILE, leads);
-    console.log('🗑️ Удалена заявка id:', id);
+    console.log('🗑️ Удалена заявка:', id);
     res.json({ success: true });
 });
 
-// ---------- КВАРТИРЫ ----------
-
 app.post('/api/upload', requireAuth, upload.single('photo'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ success: false, error: 'Файл не загружен' });
-    }
+    if (!req.file) return res.status(400).json({ success: false, error: 'Файл не загружен' });
     const url = `/uploads/${req.file.filename}`;
     console.log('📸 Загружено фото:', url);
     res.json({ success: true, url });
@@ -227,12 +213,9 @@ app.post('/api/flats', requireAuth, (req, res) => {
     const flats = readJSON(FLATS_FILE);
     const flat = {
         id: Date.now(),
-        title,
-        price,
+        title, price,
         details: details || '',
-        tags: Array.isArray(tags)
-            ? tags
-            : (tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : []),
+        tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : []),
         type: type || 'rent',
         img: img || ''
     };
@@ -253,25 +236,19 @@ app.put('/api/flats/:id', requireAuth, (req, res) => {
 
     const flats = readJSON(FLATS_FILE);
     const index = flats.findIndex(f => f.id === id);
-
-    if (index === -1) {
-        return res.status(404).json({ success: false, error: 'Квартира не найдена' });
-    }
+    if (index === -1) return res.status(404).json({ success: false, error: 'Квартира не найдена' });
 
     flats[index] = {
         ...flats[index],
-        title,
-        price,
+        title, price,
         details: details || '',
-        tags: Array.isArray(tags)
-            ? tags
-            : (tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : []),
+        tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : []),
         type: type || 'rent',
         img: img || flats[index].img || ''
     };
-
     saveJSON(FLATS_FILE, flats);
-    console.log('✏️ Обновлена квартира id:', id);
+
+    console.log('✏️ Обновлена квартира:', flats[index].title);
     res.json({ success: true, flat: flats[index] });
 });
 
@@ -286,7 +263,7 @@ app.delete('/api/flats/:id', requireAuth, (req, res) => {
     }
 
     saveJSON(FLATS_FILE, flats);
-    console.log('🗑️ Удалена квартира id:', id);
+    console.log('🗑️ Удалена квартира:', id);
     res.json({ success: true });
 });
 
