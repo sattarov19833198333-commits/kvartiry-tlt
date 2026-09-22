@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админка — Управление</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .admin-header h2 {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+
+        .back-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover { text-decoration: underline; }
+
+        /* ===== ВКЛАДКИ ===== */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e6ed;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #7f8c8d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover { color: #2c3e50; }
+
+        .tab-btn.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== ФОРМА / КАРТОЧКИ ===== */
+        .admin-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .admin-card h3 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .admin-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .admin-form .full { grid-column: 1 / -1; }
+
+        .admin-form label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .admin-form input,
+        .admin-form select,
+        .admin-form textarea {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .admin-form input:focus,
+        .admin-form select:focus,
+        .admin-form textarea:focus {
+            border-color: #3498db;
+        }
+
+        .photo-preview {
+            width: 100%;
+            max-width: 300px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px dashed #ddd;
+            background: #f9f9f9;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .admin-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover { background: #229954; }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover { background: #7f8c8d; }
+
+        .status {
+            grid-column: 1 / -1;
+            font-size: 14px;
+            min-height: 20px;
+            margin-top: 10px;
+        }
+
+        .status.success { color: #27ae60; }
+        .status.error { color: #e74c3c; }
+
+        /* ===== СПИСОК КВАРТИР ===== */
+        .admin-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .admin-item {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .admin-item img {
+            width: 100px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .admin-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .admin-item-info h4 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .admin-item-info p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .btn-edit:hover { background: #2980b9; }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .btn-delete:hover { background: #c0392b; }
+
+        /* ===== ЗАЯВКИ ===== */
+        .leads-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .leads-toolbar h3 {
+            margin: 0;
+        }
+
+        .btn-refresh {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .btn-refresh:hover { background: #2980b9; }
+
+        .lead-item {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-left: 5px solid #95a5a6;
+            transition: all 0.3s;
+        }
+
+        .lead-item.status-new { border-left-color: #e74c3c; background: #fef5f4; }
+        .lead-item.status-in_progress { border-left-color: #f39c12; background: #fef9f0; }
+        .lead-item.status-closed { border-left-color: #27ae60; background: #f4fbf6; opacity: 0.85; }
+
+        .lead-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .lead-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .lead-date {
+            font-size: 13px;
+            color: #95a5a6;
+        }
+
+        .lead-body {
+            margin-bottom: 15px;
+        }
+
+        .lead-row {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lead-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .lead-link:hover { text-decoration: underline; }
+
+        .lead-action {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        .lead-action.whatsapp { background: #25d366; }
+        .lead-action.whatsapp:hover { background: #1eb755; }
+
+        .lead-action.telegram { background: #229ed9; }
+        .lead-action.telegram:hover { background: #1a7aa8; }
+
+        .lead-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding-top: 15px;
+            border-top: 1px solid #e0e6ed;
+        }
+
+        .lead-status-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+            background: white;
+            font-weight: bold;
+        }
+
+        .lead-status-select:focus { border-color: #3498db; }
+
+        /* ===== ЭКРАН ВХОДА ===== */
+        .login-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 35px;
+            max-width: 380px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-box h2 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .login-box label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 15px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .login-box input:focus { border-color: #3498db; }
+
+        .login-box .btn-primary {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 14px;
+            margin-left: 15px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        @media (max-width: 700px) {
+            .admin-form { grid-template-columns: 1fr; }
+            .admin-item { flex-wrap: wrap; }
+            .lead-footer { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ЭКРАН ВХОДА -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h2>🔐 Вход в админку</h2>
+            <form id="loginForm">
+                <label>Логин</label>
+                <input type="text" id="loginInput" placeholder="admin" required autocomplete="username">
+
+                <label>Пароль</label>
+                <input type="password" id="passwordInput" placeholder="••••••••" required autocomplete="current-password">
+
+                <button type="submit" class="btn-primary">Войти</button>
+                <p id="loginError" class="status error"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div id="adminContent" style="display: none;">
+
+        <header>
+            <h1>🏠 КвартирыТЛТ — Админка</h1>
+            <nav>
+                <a href="index.html">Сайт</a>
+                <button id="logoutBtn" class="logout-btn">Выйти</button>
+            </nav>
+        </header>
+
+        <div class="admin-container">
+
+            <div class="admin-header">
+                <h2>Управление</h2>
+                <a href="index.html" class="back-link">← Вернуться на сайт</a>
+            </div>
+
+            <!-- ВКЛАДКИ -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="tabLeads">📥 Заявки (<span id="countLeads">0</span>)</button>
+                <button class="tab-btn" data-tab="tabFlats">🏠 Квартиры (<span id="countFlats">0</span>)</button>
+            </div>
+
+            <!-- ВКЛАДКА: ЗАЯВКИ -->
+            <div id="tabLeads" class="tab-content active">
+                <div class="admin-card">
+                    <div class="leads-toolbar">
+                        <h3>📥 Все заявки</h3>
+                        <button class="btn-refresh" id="refreshLeads">🔄 Обновить</button>
+                    </div>
+                    <div id="leadsList">
+                        <p>Загрузка...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ВКЛАДКА: КВАРТИРЫ -->
+            <div id="tabFlats" class="tab-content">
+                <div class="admin-card">
+                    <h3 id="formTitle">➕ Добавить квартиру</h3>
+
+                    <form class="admin-form" id="addFlatForm">
+                        <div>
+                            <label>Название *</label>
+                            <input type="text" name="title" placeholder="2-комн. квартира, 65 м²" required>
+                        </div>
+
+                        <div>
+                            <label>Цена *</label>
+                            <input type="text" name="price" placeholder="65 000 ₽/мес" required>
+                        </div>
+
+                        <div>
+                            <label>Район / метро</label>
+                            <input type="text" name="details" placeholder="м. Тверская • 5 мин пешком">
+                        </div>
+
+                        <div>
+                            <label>Тип сделки</label>
+                            <select name="type">
+                                <option value="rent">Аренда</option>
+                                <option value="sale">Продажа</option>
+                            </select>
+                        </div>
+
+                        <div class="full">
+                            <label>Теги (через запятую)</label>
+                            <input type="text" name="tags" placeholder="С мебелью, Евроремонт">
+                        </div>
+
+                        <div class="full">
+                            <label>Фото</label>
+                            <input type="file" id="photoInput" accept="image/*">
+                            <img id="photoPreview" class="photo-preview" alt="Превью"
+                                 src="https://via.placeholder.com/300x180?text=Фото+не+выбрано">
+                            <input type="hidden" name="img" id="imgUrl">
+                        </div>
+
+                        <div class="admin-actions">
+                            <button type="submit" class="btn-primary" id="addBtn">Добавить квартиру</button>
+                            <button type="button" class="btn-cancel" id="cancelBtn" style="display: none;">Отмена</button>
+                        </div>
+
+                        <div class="status" id="addStatus"></div>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <h3>📋 Все квартиры</h3>
+                    <div class="admin-list" id="adminList">
+                        <p>Загрузка...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <p>© 2026 КвартирыТЛТ — Админка</p>
+        </footer>
+
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

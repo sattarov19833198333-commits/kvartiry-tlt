@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квартиры — Аренда и Продажа</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>🏠 КвартирыТЛТ</h1>
+        <nav>
+            <a href="#">Аренда</a>
+            <a href="#">Продажа</a>
+            <a href="#">Контакты</a>
+            <a href="admin.html" style="background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px;">⚙️ Админка</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Найдите квартиру мечты</h2>
+        <p>Аренда и продажа недвижимости в Тольятти и в Самарской области</p>
+        <button class="btn" id="ctaBtn">Оставить заявку</button>
+    </section>
+
+    <div class="filters">
+        <select id="dealType">
+            <option value="rent">Аренда</option>
+            <option value="sale">Продажа</option>
+        </select>
+        <select id="rooms">
+            <option value="any">Комнат: Любое</option>
+            <option value="1">1 комната</option>
+            <option value="2">2 комнаты</option>
+            <option value="3">3 комнаты</option>
+        </select>
+        <input type="text" id="district" placeholder="Район или метро">
+        <button id="searchBtn">Найти</button>
+    </div>
+
+    <div class="container">
+        <h3>Популярные предложения</h3>
+        <div class="cards" id="cards"></div>
+    </div>
+
+    <footer>
+        <p><strong>🏠 КвартирыМск</strong></p>
+        <p>Телефон: +7 (999) 123-45-67 • Email: info@example.ru</p>
+        <p>© 2026 Все права защищены</p>
+    </footer>
+
+    <!-- Модальное окно заявки -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <h3>Оставить заявку</h3>
+            <p class="modal-subtitle">Мы свяжемся с вами в течение 15 минут</p>
+
+            <form id="leadForm">
+                <input type="text" name="name" placeholder="Ваше имя" required>
+                <input type="tel" name="phone" placeholder="Телефон" required>
+                <input type="email" name="email" placeholder="Email (необязательно)">
+
+                <select name="dealType">
+                    <option value="rent">Хочу арендовать</option>
+                    <option value="sale">Хочу купить</option>
+                    <option value="rentOut">Хочу сдать</option>
+                    <option value="sell">Хочу продать</option>
+                </select>
+
+                <textarea name="message" placeholder="Комментарий (район, бюджет, пожелания)" rows="3"></textarea>
+
+                <button type="submit" class="btn-submit" id="submitBtn">Отправить</button>
+                <p class="form-status" id="formStatus"></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
