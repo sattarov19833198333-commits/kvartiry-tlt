@@ -3,59 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Квартиры — Аренда и Продажа</title>
+    <title>КвартирыТЛТ — Недвижимость в Тольятти</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>🏠 КвартирыТЛТ</h1>
-        <nav>
-            <a href="#">Аренда</a>
-            <a href="#">Продажа</a>
-            <a href="#">Контакты</a>
-            <a href="admin.html" style="background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px;">⚙️ Админка</a>
-        </nav>
+    <!-- ШАПКА -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <span class="logo-mark">◆</span>
+                <span class="logo-text">КвартирыТЛТ</span>
+            </a>
+            <nav class="main-nav">
+                <a href="#catalog">Каталог</a>
+                <a href="#contacts">Контакты</a>
+                <a href="admin.html" class="nav-admin">Админка</a>
+            </nav>
+        </div>
     </header>
 
+    <!-- БАННЕР -->
     <section class="hero">
-        <h2>Найдите квартиру мечты</h2>
-        <p>Аренда и продажа недвижимости в Тольятти и в Самарской области</p>
-        <button class="btn" id="ctaBtn">Оставить заявку</button>
+        <div class="hero-inner">
+            <div class="hero-label">Недвижимость в Тольятти</div>
+            <h1>Аренда и продажа<br>квартир в Тольятти</h1>
+            <p>Автозаводский, Центральный и Комсомольский районы. Подбор квартиры за 15 минут.</p>
+            <button class="btn-primary" id="ctaBtn">Оставить заявку</button>
+        </div>
     </section>
 
-    <div class="filters">
-        <select id="dealType">
-            <option value="rent">Аренда</option>
-            <option value="sale">Продажа</option>
-        </select>
-        <select id="rooms">
-    <option value="any">Комнат: Любое</option>
-    <option value="studio">Студия</option>
-    <option value="1">1 комната</option>
-    <option value="2">2 комнаты</option>
-    <option value="3">3 комнаты</option>
-    <option value="4">4+ комнаты</option>
-</select>
-        <input type="text" id="district" placeholder="Район или метро">
-        <button id="searchBtn">Найти</button>
-    </div>
+    <!-- ФИЛЬТРЫ -->
+    <section class="filters-wrapper" id="catalog">
+        <div class="filters">
+            <div class="filter-group">
+                <label>Тип сделки</label>
+                <select id="dealType">
+                    <option value="rent">Аренда</option>
+                    <option value="sale">Продажа</option>
+                </select>
+            </div>
 
-    <div class="container">
-        <h3>Популярные предложения</h3>
+            <div class="filter-group">
+                <label>Комнат</label>
+                <select id="rooms">
+                    <option value="any">Любое</option>
+                    <option value="studio">Студия</option>
+                    <option value="1">1 комната</option>
+                    <option value="2">2 комнаты</option>
+                    <option value="3">3 комнаты</option>
+                    <option value="4">4+ комнаты</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Район или улица</label>
+                <input type="text" id="district" placeholder="Автозаводский, Мира...">
+            </div>
+
+            <button id="searchBtn" class="btn-search">Найти</button>
+        </div>
+    </section>
+
+    <!-- КАТАЛОГ -->
+    <section class="catalog">
+        <div class="catalog-header">
+            <h2>Популярные предложения</h2>
+            <span class="catalog-count" id="catalogCount"></span>
+        </div>
         <div class="cards" id="cards"></div>
-    </div>
+    </section>
 
-    <footer>
-        <p><strong>🏠 КвартирыТлт</strong></p>
-        <p>Телефон: +7 (999) 123-45-67 • Email: info@example.ru</p>
-        <p>© 2026 Все права защищены</p>
+    <!-- ПОДВАЛ -->
+    <footer class="site-footer" id="contacts">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="logo">
+                    <span class="logo-mark">◆</span>
+                    <span class="logo-text">КвартирыТЛТ</span>
+                </div>
+                <p>Недвижимость в Тольятти и Самарской области. Подбор, аренда, продажа.</p>
+            </div>
+
+            <div class="footer-contacts">
+                <h4>Контакты</h4>
+                <a href="tel:+79879543812">+7 (987) 954-38-12</a>
+                <a href="mailto:info@kvartiry-tlt.ru">info@kvartiry-tlt.ru</a>
+            </div>
+
+            <div class="footer-nav">
+                <h4>Разделы</h4>
+                <a href="#catalog">Каталог</a>
+                <a href="admin.html">Админка</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 КвартирыТЛТ. Все права защищены.</p>
+        </div>
     </footer>
 
-    <!-- Модальное окно заявки -->
+    <!-- МОДАЛЬНОЕ ОКНО ЗАЯВКИ -->
     <div class="modal" id="modal">
         <div class="modal-content">
-            <button class="modal-close" id="modalClose">&times;</button>
+            <button class="modal-close" id="modalClose">×</button>
             <h3>Оставить заявку</h3>
             <p class="modal-subtitle">Мы свяжемся с вами в течение 15 минут</p>
 
@@ -76,6 +126,34 @@
                 <button type="submit" class="btn-submit" id="submitBtn">Отправить</button>
                 <p class="form-status" id="formStatus"></p>
             </form>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО КВАРТИРЫ -->
+    <div class="flat-modal" id="flatModal">
+        <div class="flat-modal-content">
+            <button class="flat-modal-close" id="flatModalClose">×</button>
+
+            <div class="flat-modal-img-wrap">
+                <img id="flatModalImg" src="" alt="">
+            </div>
+
+            <div class="flat-modal-body">
+                <div class="flat-modal-price" id="flatModalPrice"></div>
+                <h3 class="flat-modal-title" id="flatModalTitle"></h3>
+                <div class="flat-modal-details" id="flatModalDetails"></div>
+                <div class="flat-modal-tags" id="flatModalTags"></div>
+
+                <div class="flat-modal-actions">
+                    <a href="#" class="flat-action-btn primary" id="flatCallBtn">📞 Позвонить</a>
+                    <a href="#" target="_blank" class="flat-action-btn whatsapp" id="flatWhatsappBtn">💬 WhatsApp</a>
+                    <a href="#" target="_blank" class="flat-action-btn telegram" id="flatTelegramBtn">✈️ Telegram</a>
+                </div>
+
+                <button class="flat-modal-cta" id="flatModalCta">Оставить заявку на эту квартиру</button>
+
+                <button class="flat-modal-share" id="flatModalShare">🔗 Поделиться</button>
+            </div>
         </div>
     </div>
 
